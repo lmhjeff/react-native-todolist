@@ -5,7 +5,7 @@ import { SANITY_DATASET, SANITY_PROJECT_ID, SANITY_TOKEN } from "@env";
 const client = sanityClient({
   projectId: SANITY_PROJECT_ID,
   dataset: SANITY_DATASET || "production",
-  useCdn: true,
+  useCdn: false,
   appVersion: "2021-10-21",
   apiVersion: "2022-11-07",
 
