@@ -25,9 +25,9 @@ const Create = () => {
       title: data.title,
       content: data.content,
     };
-    console.log("todo", todo);
+
     await sanityClient.create(todo).then((res) => {
-      console.log(res);
+      console.log("res", res);
     });
 
     reset();

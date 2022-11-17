@@ -32,6 +32,13 @@ export type customerScreenNavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<RootStackParamList>
 >;
 
+const query = `
+*[_type=='todolist'] | order(_createdAt desc) {
+  ...,
+
+}
+`;
+
 const HomeScreen = () => {
   const navigation = useNavigation();
   const [todolist, setTodolist] = useState<Todo[]>([]);
@@ -40,6 +47,12 @@ const HomeScreen = () => {
   useLayoutEffect(() => {
     navigation.setOptions({ headerShown: false });
   }, []);
+
+  // const newTodo = sanityClient.listen(query).subscribe((update) => {
+  //   const newupdate = update.result!;
+
+  //   console.log("newupdate", newupdate);
+  // });
 
   const fetchTodoList = async () => {
     setRefreshing(true);
@@ -59,17 +72,29 @@ const HomeScreen = () => {
     }
   };
 
+  // useEffect(() => {
+  //   fetchTodoList();
+  // }, []);
+
+  const newTodo = sanityClient.listen(query).subscribe((update) => {
+    const newupdate = update.result!;
+    console.log("newupdate", newupdate);
+  });
+
+  newTodo.unsubscribe();
+
   useEffect(() => {
     fetchTodoList();
+    console.log("newTodo", newTodo);
   }, []);
 
   const deleteTodo = async (id: string) => {
-    setRefreshing(true);
+    setRefreshing(false);
     await sanityClient.delete(id).then(() => {
       console.log(`Deleted ${id}`);
       alert(`Deleted ${id}`);
     });
-    setRefreshing(false);
+    setRefreshing(true);
     fetchTodoList();
   };
 
@@ -80,7 +105,7 @@ const HomeScreen = () => {
         {refreshing ? <ActivityIndicator color="red" /> : null}
 
         <FlatList
-          extraData={todolist}
+          extraData={newTodo}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
